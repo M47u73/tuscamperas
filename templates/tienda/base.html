@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ config.nombre_tienda }}{% endblock %}</title>
+  <meta name="description" content="{{ config.slogan }}" />
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --primary-light: #2a4f82;
+      --primary-dark: #152b47;
+      --accent: #f39c12;
+      --accent-dark: #d68910;
+      --text-dark: #1a1a2e;
+      --text-muted: #6c757d;
+      --bg-light: #f8f9fc;
+      --border-color: #e2e8f0;
+      --shadow: 0 4px 20px rgba(30,58,95,0.10);
+      --shadow-hover: 0 8px 30px rgba(30,58,95,0.18);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main { flex: 1; }
+
+    /* ── NAVBAR ── */
+    .navbar-brand-text {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff !important;
+      letter-spacing: -0.5px;
+    }
+    .navbar-brand-text span { color: var(--accent); }
+
+    .navbar {
+      background: var(--primary) !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      padding: 0.6rem 0;
+    }
+
+    .navbar .nav-link {
+      color: rgba(255,255,255,0.85) !important;
+      font-weight: 500;
+      font-size: 0.92rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .navbar .nav-link:hover,
+    .navbar .nav-link.active {
+      color: #fff !important;
+      background: rgba(255,255,255,0.12);
+    }
+
+    .navbar-phone {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar-phone a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .cart-badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 20px;
+      position: absolute;
+      top: -4px;
+      right: -8px;
+    }
+
+    /* ── BOTONES ── */
+    .btn-primary-custom {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      padding: 0.55rem 1.3rem;
+      transition: all 0.2s;
+    }
+    .btn-primary-custom:hover {
+      background: var(--primary-light);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      padding: 0.6rem 1.5rem;
+      transition: all 0.2s;
+    }
+    .btn-accent:hover {
+      background: var(--accent-dark);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(243,156,18,0.35);
+    }
+
+    .btn-outline-primary-custom {
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      background: transparent;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      padding: 0.5rem 1.2rem;
+      transition: all 0.2s;
+    }
+    .btn-outline-primary-custom:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* ── TARJETAS DE PRODUCTO ── */
+    .product-card {
+      background: #fff;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-color);
+    }
+    .product-card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-4px);
+    }
+    .product-card .card-img-wrapper {
+      position: relative;
+      overflow: hidden;
+      background: #f0f0f0;
+      aspect-ratio: 3/4;
+    }
+    .product-card .card-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .card-img-wrapper img {
+      transform: scale(1.05);
+    }
+    .product-card .card-body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card .card-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      margin-bottom: 0.3rem;
+    }
+    .product-card .price-current {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .product-card .price-original {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+    .badge-oferta {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .badge-descuento {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      z-index: 2;
+    }
+    .badge-sin-stock {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      z-index: 2;
+    }
+
+    /* ── SECCIONES ── */
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      position: relative;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    .section-title.centered::after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* ── CATEGORÍAS ── */
+    .cat-card {
+      background: var(--primary);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      transition: all 0.3s;
+      box-shadow: var(--shadow);
+    }
+    .cat-card:hover {
+      background: var(--accent);
+      color: #fff;
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+    .cat-card i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .cat-card span {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--primary-dark);
+      color: rgba(255,255,255,0.8);
+      padding: 2.5rem 0 1.5rem;
+      margin-top: auto;
+    }
+    footer h5 {
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    footer a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    footer a:hover { color: var(--accent); }
+    footer .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ── WHATSAPP FLOTANTE ── */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #25D366;
+      color: #fff;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 4px 16px rgba(37,211,102,0.45);
+      z-index: 9999;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(37,211,102,0.6);
+    }
+
+    /* ── ALERTAS ── */
+    .alert { border-radius: var(--radius-sm); border: none; }
+
+    /* ── FORMULARIOS ── */
+    .form-control, .form-select {
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-color);
+      font-size: 0.92rem;
+      padding: 0.55rem 0.9rem;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30,58,95,0.12);
+    }
+    .form-label { font-weight: 600; font-size: 0.88rem; color: var(--text-dark); }
+
+    /* ── COPY BUTTON ── */
+    .copy-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      padding: 0 4px;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .copy-btn:hover { color: var(--accent-dark); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .section-title { font-size: 1.3rem; }
+      .navbar-phone { display: none; }
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <a class="navbar-brand navbar-brand-text" href="{% url 'index' %}">
+      <i class="bi bi-bag-heart-fill me-1"></i>
+      {{ config.nombre_tienda|default:"Urban Style" }}
+    </a>
+
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <!-- Teléfono visible en desktop -->
+      <div class="navbar-phone d-none d-lg-flex">
+        <i class="bi bi-telephone-fill"></i>
+        <a href="tel:{{ config.telefono }}">{{ config.telefono }}</a>
+        <button class="copy-btn" onclick="copiarTexto('{{ config.telefono }}')" title="Copiar teléfono">
+          <i class="bi bi-clipboard"></i>
+        </button>
+      </div>
+
+      <!-- Botón carrito -->
+      <a href="{% url 'ver_carrito' %}" class="btn btn-sm position-relative" style="color:#fff;">
+        <i class="bi bi-cart3" style="font-size:1.3rem;"></i>
+        {% if carrito_count > 0 %}
+        <span class="cart-badge">{{ carrito_count }}</span>
+        {% endif %}
+      </a>
+
+      <!-- Toggle móvil -->
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <i class="bi bi-list" style="color:#fff;font-size:1.5rem;"></i>
+      </button>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-3 mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'index' %}"><i class="bi bi-house me-1"></i>Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'catalogo' %}"><i class="bi bi-grid me-1"></i>Catálogo</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'catalogo' %}?ofertas=1"><i class="bi bi-tag me-1"></i>Ofertas</a>
+        </li>
+      </ul>
+      <!-- Teléfono en móvil -->
+      <div class="navbar-phone d-lg-none mt-2 ms-2">
+        <i class="bi bi-telephone-fill"></i>
+        <a href="tel:{{ config.telefono }}">{{ config.telefono }}</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MENSAJES ── -->
+{% if messages %}
+<div class="container mt-3">
+  {% for msg in messages %}
+  <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show" role="alert">
+    {{ msg }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ── CONTENIDO ── -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h5><i class="bi bi-bag-heart-fill me-2"></i>{{ config.nombre_tienda }}</h5>
+        <p style="font-size:0.88rem;">{{ config.slogan }}</p>
+        <div class="d-flex gap-3 mt-2">
+          {% if config.instagram %}
+          <a href="{{ config.instagram }}" target="_blank" title="Instagram">
+            <i class="bi bi-instagram" style="font-size:1.3rem;"></i>
+          </a>
+          {% endif %}
+          {% if config.facebook %}
+          <a href="{{ config.facebook }}" target="_blank" title="Facebook">
+            <i class="bi bi-facebook" style="font-size:1.3rem;"></i>
+          </a>
+          {% endif %}
+          {% if config.tiktok %}
+          <a href="{{ config.tiktok }}" target="_blank" title="TikTok">
+            <i class="bi bi-tiktok" style="font-size:1.3rem;"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <h5>Contacto</h5>
+        <p style="font-size:0.88rem;">
+          <i class="bi bi-telephone me-2"></i>
+          <a href="tel:{{ config.telefono }}">{{ config.telefono }}</a>
+          <button class="copy-btn" onclick="copiarTexto('{{ config.telefono }}')" title="Copiar">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <br />
+          <i class="bi bi-envelope me-2"></i>
+          <a href="mailto:{{ config.email }}">{{ config.email }}</a><br />
+          <i class="bi bi-clock me-2"></i>{{ config.horario_atencion }}
+        </p>
+      </div>
+      <div class="col-md-4">
+        <h5>Envíos</h5>
+        <p style="font-size:0.88rem;">{{ config.info_envio }}</p>
+      </div>
+    </div>
+    <div class="footer-bottom text-center">
+      {{ config.texto_footer }}
+    </div>
+  </div>
+</footer>
+
+<!-- ── WHATSAPP FLOTANTE ── -->
+{% if config.whatsapp %}
+<a href="https://wa.me/{{ config.whatsapp }}" class="whatsapp-float" target="_blank" title="Contactar por WhatsApp">
+  <i class="bi bi-whatsapp"></i>
+</a>
+{% endif %}
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function copiarTexto(texto) {
+  navigator.clipboard.writeText(texto).then(() => {
+    const btn = event.currentTarget;
+    const icon = btn.querySelector('i');
+    icon.className = 'bi bi-check2';
+    setTimeout(() => { icon.className = 'bi bi-clipboard'; }, 2000);
+  });
+}
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
