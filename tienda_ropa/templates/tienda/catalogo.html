@@ -1,0 +1,147 @@
+{% extends "tienda/base.html" %}
+{% load static %}
+
+{% block title %}Catálogo — {{ config.nombre_tienda }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .catalogo-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 2rem 0;
+  }
+  .catalogo-header h1 { font-weight: 800; font-size: 1.8rem; margin: 0; }
+  .filtros-bar {
+    background: #fff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.8rem 0;
+    position: sticky;
+    top: 56px;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .filtro-btn {
+    border: 1.5px solid var(--border-color);
+    background: #fff;
+    color: var(--text-dark);
+    border-radius: 20px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .filtro-btn:hover, .filtro-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+  .filtro-btn.oferta-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .search-form input {
+    border-radius: 20px;
+    border: 1.5px solid var(--border-color);
+    padding: 0.35rem 1rem;
+    font-size: 0.88rem;
+  }
+  .search-form input:focus {
+    border-color: var(--primary);
+    box-shadow: none;
+    outline: none;
+  }
+  .search-form button {
+    border-radius: 20px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.35rem 1rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--text-muted);
+  }
+  .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="catalogo-header">
+  <div class="container">
+    <h1>
+      {% if categoria_activa %}
+        {{ categoria_activa.nombre }}
+      {% elif solo_ofertas %}
+        Ofertas
+      {% elif busqueda %}
+        Resultados para "{{ busqueda }}"
+      {% else %}
+        Catálogo completo
+      {% endif %}
+    </h1>
+    <p style="margin:0.3rem 0 0;opacity:0.8;font-size:0.9rem;">
+      {{ productos.count }} producto{{ productos.count|pluralize }} encontrado{{ productos.count|pluralize }}
+    </p>
+  </div>
+</div>
+
+<!-- Filtros -->
+<div class="filtros-bar">
+  <div class="container">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <!-- Búsqueda -->
+      <form class="search-form d-flex gap-1" method="get" action="{% url 'catalogo' %}">
+        <input type="text" name="q" value="{{ busqueda }}" placeholder="Buscar producto..." />
+        {% if categoria_activa %}<input type="hidden" name="categoria" value="{{ categoria_activa.slug }}" />{% endif %}
+        {% if solo_ofertas %}<input type="hidden" name="ofertas" value="1" />{% endif %}
+        <button type="submit"><i class="bi bi-search"></i></button>
+      </form>
+
+      <!-- Categorías -->
+      <a href="{% url 'catalogo' %}{% if busqueda %}?q={{ busqueda }}{% endif %}"
+         class="filtro-btn {% if not categoria_activa and not solo_ofertas %}active{% endif %}">
+        Todos
+      </a>
+      {% for cat in categorias %}
+      <a href="{% url 'catalogo' %}?categoria={{ cat.slug }}{% if busqueda %}&q={{ busqueda }}{% endif %}"
+         class="filtro-btn {% if categoria_activa.slug == cat.slug %}active{% endif %}">
+        {{ cat.nombre }}
+      </a>
+      {% endfor %}
+      <a href="{% url 'catalogo' %}?ofertas=1{% if busqueda %}&q={{ busqueda }}{% endif %}"
+         class="filtro-btn oferta-btn {% if solo_ofertas %}active{% endif %}">
+        <i class="bi bi-tag me-1"></i>Ofertas
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Productos -->
+<div class="container py-4">
+  {% if productos %}
+  <div class="row g-3">
+    {% for producto in productos %}
+    <div class="col-6 col-md-4 col-lg-3">
+      {% include "tienda/_product_card.html" with producto=producto %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-search"></i>
+    <h4>No encontramos productos</h4>
+    <p>Probá con otros filtros o términos de búsqueda.</p>
+    <a href="{% url 'catalogo' %}" class="btn btn-primary-custom">Ver todos los productos</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
